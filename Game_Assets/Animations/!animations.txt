@@ -1,0 +1,9 @@
+Pygame does not support gifs.
+
+If you want to use animations you need to get each frame of the animation by downloading the gif and uploading it to Piskell as an image.
+
+That will auto-split the gif into each of its frames.
+
+Then you need to loop through all the images for the animation.
+
+Obviously, it isn't easy or quick, only use animations if you are confident that you will have enough time!
