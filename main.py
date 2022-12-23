@@ -4,18 +4,13 @@
 
 import pygame, sys, os
 from pygame.locals import *
+import time
 
 clock = pygame.time.Clock()
 pygame.init()
-screen = pygame.display.set_mode(
-    (800, 600)
-)  #All maps are made for this screen resolution, if you want a different size screen, you need to edit the map file or make your own.
+screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('Final Project Scaffold')
 
-# List of assets
-# Player (good to go)
-# Fence/wall ()
-# turrets (rectangle for now and add images later)
 tile_size = (20, 20)
 
 BACKGROUND = pygame.image.load('background.png').convert_alpha()
@@ -74,9 +69,6 @@ def load_map(path):
     return game_map
 
 
-# collision detection function (stars,exit,snowball,turret,fence)
-
-
 def collision_test(rect, tiles):
     '''
     Function to test if one rect collides with another.
@@ -89,15 +81,12 @@ def collision_test(rect, tiles):
     hit_list: a list of tiles an object collides with
     
     '''
-    # tiles = [tile, tile, tile]
+
     hit_list = []
     for tile in tiles:
         if rect.colliderect(tile):
             hit_list.append(tile)
     return hit_list
-    # star_rect = [star, star, star]
-    # for s in star_rect:
-    #     screen.blit(star, (star_rect.x, star_rect.y))
 
 
 # movement function (up, down, left, right)
@@ -143,39 +132,10 @@ def move(rect, movement, tiles):
     return rect, collision_types
 
 
-# write our function declaration
-'''def finishline(rect, tiles):
-    hit_list = collision_test(rect, tiles)
-    if hit_list != []:
-      BLACK = (0,0,0)
-font = pygame.font.SysFont(None, 50)
-imgage = font.render('Level Completed', True, BLACK)
-screen.blit(imgage, (50, 50))'''
-
-# want to move to the next level or exit the window
-
-# star collision
-# def star_collision(rect, stars):
-#     star_x_coordinates = []
-#     star_y_coordinates = []
-#     hit_list = collision_test(rect, stars)
-#     for star in hit_list:
-#         star_x_coordinates += star.x
-#         star_y_coordinates += star.y
-
-#     return star_x_coordinates
-#     return star_y_coordinates
-
 star_collision = []
-
-# def snowball_move(snowballs, tiles):
-
-# def snowball_hit():
-#     print(" Hit By Snowball")
-
 #Loads map file
-game_map = load_map(
-    'Maps/map1')  #Opens the map as listed in maps.txt in the Maps folder.
+game_map = [load_map('Maps/map1')
+            ]  #Opens the map as listed in maps.txt in the Maps folder.
 
 PLAYER_right = False
 PLAYER_left = False
@@ -188,35 +148,31 @@ snowball_rects = []
 snowball_rect_list = []
 collided_stars = []
 hit_by_snowball_counter = 0
+global level
+level = 0
 while True:
-    tile_rects = []  # that goes into move then into collision test
-    star_rects = [
-    ]  # star_rects also goes into collision test, update what happens if we run into one of these rects instead of move
-    finish_line_rects = []  #
+    tile_rects = []
+    star_rects = []
+    finish_line_rects = []
     popped_snowballs = []
     turret_number = 0
 
     screen.blit(BACKGROUND, (0, 0))
     y = 0
-    for row in game_map:
+    for row in game_map[level]:
         x = 0
         for tile in row:
             if tile == '1':
                 screen.blit(fence, (x * tile_size[0], y * tile_size[1]))
-                #list_adding_to.append(what_were_adding)
+
                 tile_rects.append(
                     pygame.Rect(x * tile_size[0], y * tile_size[1],
                                 tile_size[0], tile_size[1]))
             elif tile == '2':
-                # screen.blit(star, (x * tile_size[0], y * tile_size[1]))
-                # if a star has been collided with, then we dont want to add it to star_rects
+
                 rect = pygame.Rect(x * tile_size[0], y * tile_size[1],
                                    tile_size[0], tile_size[1])
-                # if statement
-                # if star_rect is in star_hit_list:
-                # rect: thats the rectangle we want to check if its in collided_stars
-                # collided_stars: list of all the rectangles of the stars weve collided with
-                # star_rects: original list of all star rects from the game map
+
                 if rect not in collided_stars:
                     star_rects.append(rect)
 
@@ -240,11 +196,7 @@ while True:
             elif tile == '5':
                 screen.blit(start, (x * tile_size[0], y * tile_size[1],
                                     tile_size[0], tile_size[1]))
-                # tile_rects.append(
-                #     pygame.Rect(x * tile_size[0], y * tile_size[1],
-                #                 turret_rect[2], turret_rect[3]))
 
-                #Just an example, add as many images as you need.
                 pass
             x += 1
         y += 1
@@ -255,32 +207,16 @@ while True:
 
     star_hit_list = collision_test(PLAYER_rect, star_rects)
     if star_hit_list == []:
-        # star_rects = [s,s,s]
-        for s in star_rects:
-            # if rect.colliderect.
-            screen.blit(star, (s.x, s.y))
-    # star_hit_list = [s]   [s,s]
-    elif star_hit_list != []:
-        # [1,2,3]
-        # for num in list:
-        #     print(num)
-        for collided_star in star_hit_list:
-            # star_hit_list = [star_hit, star_hit]
-            collided_stars.append(collided_star)
 
-            # # checking if the list is equal to an integer: len([stars, stars]) == 1:
-        if len(collided_stars) == 0:
-            num_stars_collected = 3
-            print(0)
-        elif len(collided_stars) == 1:
-            num_stars_collected = 2
-            print(1)
-        elif len(collided_stars) == 2:
-            num_stars_collected = 1
-            print(2)
-        elif len(collided_stars) == 3:
-            num_stars_collected = 0
-            print(3)
+        for s in star_rects:
+
+            screen.blit(star, (s.x, s.y))
+
+    elif star_hit_list != []:
+
+        for collided_star in star_hit_list:
+
+            collided_stars.append(collided_star)
 
     PLAYER_movement = [0, 0]
     if PLAYER_right:
@@ -291,9 +227,7 @@ while True:
         PLAYER_movement[1] -= 2
     if PLAYER_down:
         PLAYER_movement[1] += 2
-    # need to define player right, left, up, and down
 
-    # calling movement function
     PLAYER_rect, PLAYER_collisions = move(PLAYER_rect, PLAYER_movement,
                                           tile_rects)
 
@@ -312,12 +246,9 @@ while True:
         snowball_frequency_counter += 1
         snowball_movement += 2
 
-    # moves snowball
-    # len(list)
-
     for x in range(0, len(snowball_rects)):
         snowball_rects[x].y += 2
-        # check if snowballs in the list are in the window, and if not, remove them from the list
+
         if snowball_rects[x].y > 600:
             if x in popped_snowballs == False:
                 popped_snowballs.append(x)
@@ -326,15 +257,46 @@ while True:
                 if x in popped_snowballs == False:
                     popped_snowballs.append(x)
         screen.blit(snowball, (snowball_rects[x].x, snowball_rects[x].y))
-        # if (PLAYER_rect.colliderect(snowball_rects[x])):
-        #     # snowball_hit()
-        #     hit_by_snowball_counter += 1
-
+        if PLAYER_rect.colliderect(snowball_rects[x]):
+            # run = False
+            BLACK = (0, 0, 0)
+            font = pygame.font.SysFont(None, 50)
+            imgage = font.render('You lose!', True, BLACK)
+            screen.fill((255, 0, 0))
+            screen.blit(imgage, (50, 50))
+            time.sleep(4)
+            run = False
     for snowball in popped_snowballs:
         snowball_rects.pop(snowball)
 
     screen.blit(PLAYER, (PLAYER_rect.x, PLAYER_rect.y))
+    BLACK = (0, 0, 0)
+    font_stars = pygame.font.SysFont(None, 50)
+    image_num_stars = font_stars.render(
+        f'Stars Collected: {len(collided_stars)}', True, BLACK)
+    screen.blit(image_num_stars, (50, 50))
 
+    hit_list_finish_line = collision_test(PLAYER_rect, finish_line_rects)
+    if hit_list_finish_line != []:
+        if level == 0:
+            level += 1
+            snowball_rect_list = []
+            collided_stars = []
+            PLAYER_rect = pygame.Rect(180, 575, 30, 30)
+
+        # replicate this condition in case the rectangle needs to be changed
+        # if level == 1:
+        #     level += 1
+        #     snowball_rect_list = []
+        #     PLAYER_rect = pygame.Rect(180, 575, 30, 30)
+
+        else:
+            font = pygame.font.SysFont(None, 50)
+            BLACK = (0, 0, 0)
+            imgage = font.render('Congrats! You beat the game!', True, BLACK)
+            screen.fill((0, 255, 0))
+            screen.blit(imgage, (50, 50))
+            # run = False
     #Defines which keys move the characters
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -361,14 +323,6 @@ while True:
                 PLAYER_up = False
             if event.key == K_DOWN:
                 PLAYER_down = False
-        # snowballs firing from player event
-    # if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT:
-    # end position is where the mouse is
-    #  end_position = pygame.mouse.get_pos()
-    # start_position is where the player is
-    #   start_position = snowball_rect
-    # want snowball to shoot from player position to mouse position
-    #  snowball_rect = move(pygame.mouse.get_pos())
 
         if event.type == QUIT:
             pygame.quit()
